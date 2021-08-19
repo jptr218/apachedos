@@ -3,8 +3,7 @@
 void worker(SOCKET sock, char* buf, int blen) {
     while (1) {
         if (send(sock, buf, blen, NULL) == SOCKET_ERROR) {
-            cout << "Crashed the target!" << endl;
-            exit(EXIT_SUCCESS);
+            cout << "Crashed the target!                                                        " << endl;
         }
         Sleep(10);
     }
