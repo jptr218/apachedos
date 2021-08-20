@@ -22,6 +22,6 @@ struct http2_stream {
     uint32_t st_id;
 };
 
-SOCKET connect_host(string ip, string port);
+addrinfo* find_host(string ip, string port);
 void http2_initial(SOCKET sock);
-void worker(SOCKET sock, char* buf, int blen);
+void worker(addrinfo* addr, char* buf, int blen);
