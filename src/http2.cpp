@@ -13,12 +13,6 @@ void http2_initial(SOCKET sock) {
     headers.flags = 0;
     headers.st_id = 0x03000000;
 
-    http2_stream continuation;
-    continuation.len = 10;
-    continuation.type = 9;
-    continuation.flags = 0;
-    continuation.st_id = 0x03000000;
-
     char buf[500];
     send(sock, "GET / HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: Upgrade, HTTP2-Settings\r\nUpgrade: h2c\r\nHTTP2-Settings: AAMAAABkAARAAAAAAAIAAAAA\r\n\r\n", 128, NULL);
     recv(sock, buf, 500, NULL);
